@@ -1,0 +1,318 @@
+# Zachary Gusikoski
+# Ouroboros I
+# MAPLEAF
+# See SimDefinitionTemplate.mapleaf for file format info & description of all options
+SimControl{
+    timeDiscretization RK45Adaptive
+    timeStep 0.01 #sec
+
+    EndCondition Apogee
+	#EndConditionValue	300
+
+    loggingLevel    2
+    RocketPlot      On
+
+    plot    FlightAnimation CP Angular CG AOA Aero Position Velocity Mach
+}
+
+Environment{
+
+	MeanWindModel               Constant
+	TurbulenceModel             PinkNoise3D
+
+    ConstantMeanWind{
+        velocity                    ( 3 0 0 ) #m/s
+    }
+
+	LaunchSite{
+        elevation               275 #m, Relative to sea level - Impacts the acceleration of gravity at launch        
+
+        # Lat / Lon only influence simulations using the 'Round' or 'WGS84' earth models
+        latitude                49 # Degrees, 90 = North Pole, -90 = South Pole, 0 = Equator
+        longitude               81 # Degrees, 0 = Prime Meridian (Greenwich, England), +'ve is East, -'ve is West
+
+        # A launch rail will prevent the rocket from deviating from the direction specified by Rocket.initialDirection
+            # Until it has travelled the length of the launch rail from its starting location
+            # The launch rail will also prevent downwards motion
+            # A length of 0 = no launch rail
+        railLength              13.716 #m
+
+		EarthModel                  Flat
+
+    	#### Atmospheric Properties ####
+    	# USStandardAtmosphere or Constant or TabulatedAtmosphere
+        # USStandardAtmosphere computes the exact US Standard Atmosphere
+    	AtmosphericPropertiesModel  USStandardAtmosphere
+    }
+    # turbulenceOffWhenUnderChute True # Increases time step we can take while descending
+
+    PinkNoiseModel{
+        # To set the strength of pink noise fluctuations, provide the turbulenceIntensity OR the velocityStdDeviation
+            # If both are provided, the turbulenceIntensity is used
+        turbulenceIntensity     10 # % velocity standard deviation / mean wind velocity
+        velocityStdDeviation    1 # m/s standard deviation of pink noise model
+
+        # Set the random seeds for each pink noise generator for repeatable simulations
+            # PinkNoise1D only uses 1, 2D uses 2, 3D uses all 3
+        randomSeed1             63583 # Integer
+        randomSeed2             63583 # Integer
+        randomSeed3             63583 # Integer
+    }
+
+	SampledRadioSondeData{
+        launchMonth             Aug # Three letter month code - uses yearly avg data if absent
+         #Place1 name, weighting coefficient 1, Place2 name, weighting coefficient 2, ... - Corresponding radio sonde data files must be in MAPLEAF/Examples/Wind
+        locationsToSample       Edmonton 0.4 Glasgow 0.6
+        locationASLAltitudes    710 638 # m ASL - Used to convert ASL altitude data provided in radio sonde files to AGL altitudes
+        randomSeed              228010 # Set to remove randomization from sampling, have a repeatable simulation
+    }
+}
+
+Rocket{
+	name				Ouroboros
+	#initialDirection	(0 0 1)
+	rotationAxis        (0 0 1) # Any Vector, defined in launch tower ENU frame
+    rotationAngle       6 # degrees
+	position            (0 0 1.75) # m - initial position above ground level (AGL) of the rocket's CG. Set launch site elevation using Environment.LaunchSite.elevation
+    velocity            (0 0 0) # m/s - initial velocity
+    angularVelocity     (0 0 0) # rad/s - initial angular velocity - defined in the rocket's LOCAL frame
+
+	Aero{
+        # To turn off base drag (for comparisons to wind tunnel data), make sure the rocket doesn't include a Boat tail and set this to false
+        addZeroLengthBoatTailsToAccountForBaseDrag      true
+      
+        # Calculates skin friction based on laminar + transitional flow if not fully turbulent
+        fullyTurbulentBL                                true
+    }
+
+    FirstStage{
+        class           Stage
+		stageNumber		1
+		position            (0 0 0) #m - Position of stage tip, relative to tip of rocket
+
+		NoseCone{
+				baseDiameter			0.1524
+				class			Nosecone
+				cg			(0 0 -0.32)
+				position	(0 0 0)
+				mass			1.750866548
+				aspectRatio		3
+				surfaceRoughness	0.00006
+				shape		tangentOgive#Ouroboros Von Karman
+		}
+
+		NoseConeTube{
+			class	Bodytube
+			mass	0.7
+			length			0.1999996
+			cg			(0 0 -0.0999998)
+			position	(0 0 -0.4572)
+			outerDiameter		0.1524
+			surfaceRoughness	0.00006
+
+		}
+
+		RecoverySystem{
+				class			RecoverySystem
+				mass			1.995806428
+				position		(0 0 -0.95)
+				cg				(0 0 -0.1)
+				numStages 		1
+				stage1Trigger       Apogee # Apogee, Time, Altitude
+				stage1ChuteArea     2 # m^2
+				stage1Cd            1.5 # Drag Coefficient (~0.75-0.8 for flat sheet, 1.5-1.75 for domed chute)
+				stage1DelayTime     2 #s
+
+		}
+
+		Chutes{
+				class			Mass
+				mass			1.197483857
+				position		(0 0 -0.66)
+				cg				(0 0 0) #chutes are given the exact same location and cg as recovery system
+				MOI				(0.00567557453 0.00567557453 0.003367923348)#each mass component is modeled as a solid cylinder with diam 0.15m and length 0.2m
+		}
+
+		RecoveryTube{
+				length			0.6096
+				class			Bodytube
+				cg			(0 0 -0.3048)
+				position	(0 0 -0.6571996)
+				mass			0.997903214
+				outerDiameter		0.1524
+				surfaceRoughness	0.00006
+		}
+
+		AvionicsTube{
+				length			0.579196
+				class			Bodytube
+				cg				(0 0 -0.2664206)
+				position		(0 0 -1.2667996)
+				mass			0.997903214
+				outerDiameter	0.1524
+				surfaceRoughness	0.00006
+		}
+
+		Avionics{
+				class			Mass
+				mass			2.494758035
+				position		(0 0 -1.5) # positioned so cg avionics roughly aligns with cg of avionics tube
+				cg				(0 0 0)
+				MOI				(0.0118241136 0.0118241136 0.007016506973)
+		}
+
+		Payload{
+				class			Mass
+				mass			3.4
+				position		(0 0 -0.55)
+				cg				(0 0 0)
+				MOI				(0.01891858177 0.01891858177 0.01122641116)
+		}
+
+		UpperPVBulkheadTube{
+			class	Bodytube
+			mass			0.8
+			length			0.057273
+			cg			(0 0 -0.0286385)
+			position	(0 0 -1.8459956)
+			outerDiameter		0.1524
+			surfaceRoughness	0.00006
+
+		}
+
+		DiameterChange1{
+					class           Transition
+					mass            0.1114 #confirm
+					position        (0 0 -1.9032686) # Position of top, center of diameter change
+					cg              (0 0 -0.009000066667)
+					MOI             (0.01 0.01 0.0001) # need to ask
+
+					length          0.0270002 # m
+					startDiameter   0.1524 # m, Diameter at top
+					endDiameter     0.133731 # m, Diameter at bottom
+					surfaceRoughness 0.000060 # m
+		}
+
+		PressureVessel{
+				length			1.6602456
+				class			Bodytube
+				cg			(0 0 -0.9144)#-0.559308)
+				position	(0 0 -1.9302688)
+				mass			11
+				outerDiameter		0.133731
+				surfaceRoughness	0.00006
+		}
+
+		DiameterChange2{
+					class           Transition
+					mass            0.1114 #confirm
+					position        (0 0 -3.5905144) # Position of top, center of diameter change
+					cg              (0 0 -0.0561848)
+					MOI             (0.01 0.01 0.0001) # need to ask
+
+					length          0.0842772 # m
+					startDiameter   0.133731 # m, Diameter at top
+					endDiameter     0.1726184 # m, Diameter at bottom
+					surfaceRoughness 0.000060 # m
+		}
+
+		FinCan{
+				class		Bodytube
+				length		0.8782#0.8382
+				cg			(0 0 -0.4191)
+				position	(0 0 -3.675)
+				mass		3
+				outerDiameter	0.1726184
+				surfaceRoughness	0.00006
+		}
+
+		LowerInjectorBulkheadMass{
+				class			Mass
+				mass			0.9682
+				position		(0 0 -3.7)
+				cg				(0 0 0)
+				MOI				(0.006138168541 0.006138168541 0.01124359042)
+		}
+
+		MotorCasing{
+				class			Mass
+				mass			3.33181818
+				position		(0 0 -4.1)
+				cg				(0 0 0)
+				MOI				(0.03869200471 0.03869200471 0.07738400941)
+		}
+
+		UnburntFuel{
+				class			Mass
+				mass			4.5595
+				position		(0 0 -4)
+				cg				(0 0 0)
+				MOI				(0.05294892636 0.05294892636 0.1058978527)
+		}
+
+		Fins{
+				class			FinSet
+				cg			(0 0 -0.18)
+				MOI			(0.1368 0.4287 0.4287)
+				position	(0 0 -4.1372)#-4.1772)
+				mass			1.4
+				numFins           3
+				finCantAngle      0 # Positive values will induce moments in (local frame) negZ direction. Negative values will induce moments in the (local frame) posZ direction
+				firstFinAngle     0 # deg (Must be between 0 and 90) -  controls circumferential location of fins. 0 will have the first fin spanwise direction aligned with the local X-axis
+									# Rest of the fins will be spaced evenly around the rocket
+										
+				# Planform
+				sweepAngle        42.8 # deg - leading edge sweep angle. 0 = leading edge normal to rocket surface, 90 = no fin at all.
+				rootChord         0.36 # m
+				tipChord          0.119 # m - it is assumed that the tip chord is parallel to the root chord
+				span              0.13 # m - radial (from the perspective of the rocket) distance between fin root and fin tip
+
+				# Other
+				thickness         0.009906 # m - Maximum fin thickness
+				surfaceRoughness  0.000060 # m
+
+				#numFinSpanSlicesForIntegration  10 # Use this to override the number of fin span slices used to integrate normal forces produced by the fin
+					
+				LeadingEdge{
+					shape         Round # Blunt or Round (Even sharp edges always have a small radius)
+					#thickness     0.00931 # Used for 'Blunt' edge
+					radius        0.00211 # Used for 'Round' edge
+				}
+
+				TrailingEdge{
+					shape         Round # Tapered (0 base drag), Round (1/2 base drag), Blunt (full base drag)
+					#thickness     0.001 # Used for 'Blunt' edge
+					radius        0.00211 # Used for 'Round' edge
+				}
+		}
+
+		Nozzle{
+				class			Mass
+				mass			1.68636364
+				position		(0 0 -4.5)
+				cg				(0 0 0)
+				MOI				(0.01182100826 0.01182100826 0.01958353859)
+		}
+
+		NozzleHousingMass{
+				class			Mass
+				mass			2.955
+				position		(0 0 -4.5)
+				cg				(0 0 0)
+				MOI				(0.0343160604 0.0343160604 0.0686321208)
+		}
+
+		Motor{
+			class           Motor
+			path			C:\Users\Noreen\Documents\GitHub\MAPLEAF_SITVC\MAPLEAF\Examples\Motors\Ouroboros7SecondBurn.txt
+
+			# To add uncertainty to the Motor's total impulse and burn time in Monte Carlo simulations
+			# For both of the adjustment factors below: 1.0 = no effect, 1.10 = +10%, etc. 
+			#impulseAdjustFactor           1.0 # Thrust curve multiplied by given factor. Does not affect burn time.
+			#impulseAdjustFactor_stdDev    0.02331 # Sample value for Estes B4: http://nar.org/SandT/pdf/Estes/B4.pdf
+			
+			#burnTimeAdjustFactor          1.0 # Burn time multiplied by given factor, thrust produced at each time divided by it. Does not affect total impulse.
+			#burnTimeAdjustFactor_stdDev   0.10679 # Sample value for Estes B4: http://nar.org/SandT/pdf/Estes/B4.pdf
+		}
+  }
+}

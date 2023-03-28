@@ -1,0 +1,137 @@
+
+ *******************************************************************************
+
+         NASA-GLENN CHEMICAL EQUILIBRIUM PROGRAM CEA2, MAY 21, 2004
+                   BY  BONNIE MCBRIDE AND SANFORD GORDON
+      REFS: NASA RP-1311, PART I, 1994 AND NASA RP-1311, PART II, 1996
+
+ *******************************************************************************
+
+
+
+ problem    o/f=7,
+       rocket  equilibrium  frozen  nfz=1
+   p,psia=450,
+ react
+   fuel=(CH2)x(cr) wt=100 t,k=298
+   oxid=N2O wt=100
+ output
+      siunits short
+     plot p t rho cp gam son pip mach aeat ivac isp m mw
+ end
+
+
+
+
+
+              THEORETICAL ROCKET PERFORMANCE ASSUMING EQUILIBRIUM
+
+           COMPOSITION DURING EXPANSION FROM INFINITE AREA COMBUSTOR
+
+ Pin =   450.0 PSIA
+ CASE =                
+
+             REACTANT                    WT FRACTION      ENERGY      TEMP
+                                          (SEE NOTE)     KJ/KG-MOL      K  
+ FUEL        (CH2)x(cr)                   1.0000000    -25600.000    298.000
+ OXIDANT     N2O                          1.0000000         0.000      0.000
+
+ O/F=    7.00000  %FUEL= 12.500000  R,EQ.RATIO= 1.344777  PHI,EQ.RATIO= 1.344777
+
+                 CHAMBER   THROAT
+ Pinf/P            1.0000   1.7900
+ P, BAR            31.026   17.333
+ T, K             2709.09  2443.86
+ RHO, KG/CU M    3.6421 0 2.2600 0
+ H, KJ/KG         -228.14  -699.23
+ U, KJ/KG        -1080.02 -1466.17
+ G, KJ/KG        -26171.1 -24102.2
+ S, KJ/(KG)(K)     9.5762   9.5762
+
+ M, (1/n)          26.441   26.494
+ (dLV/dLP)t      -1.00164 -1.00055
+ (dLV/dLT)p        1.0396   1.0144
+ Cp, KJ/(KG)(K)    1.9334   1.7312
+ GAMMAs            1.2109   1.2285
+ SON VEL,M/SEC     1015.6    970.7
+ MACH NUMBER        0.000    1.000
+
+ PERFORMANCE PARAMETERS
+
+ Ae/At                      1.0000
+ CSTAR, M/SEC               1414.3
+ CF                         0.6863
+ Ivac, M/SEC                1760.8
+ Isp, M/SEC                  970.7
+
+
+ MOLE FRACTIONS
+
+ *CO              0.14066  0.13759
+ *CO2             0.09497  0.09851
+ *H               0.00217  0.00099
+ *H2              0.04198  0.04420
+ H2O              0.19117  0.19096
+ *NO              0.00071  0.00017
+ *N2              0.52531  0.52663
+ *O               0.00008  0.00001
+ *OH              0.00278  0.00091
+ *O2              0.00015  0.00002
+
+  * THERMODYNAMIC PROPERTIES FITTED TO 20000.K
+
+ NOTE. WEIGHT FRACTION OF FUEL IN TOTAL FUELS AND OF OXIDANT IN TOTAL OXIDANTS
+
+
+
+
+
+           THEORETICAL ROCKET PERFORMANCE ASSUMING FROZEN COMPOSITION
+
+ Pin =   450.0 PSIA
+ CASE =                
+
+             REACTANT                    WT FRACTION      ENERGY      TEMP
+                                          (SEE NOTE)     KJ/KG-MOL      K  
+ FUEL        (CH2)x(cr)                   1.0000000    -25600.000    298.000
+ OXIDANT     N2O                          1.0000000         0.000      0.000
+
+ O/F=    7.00000  %FUEL= 12.500000  R,EQ.RATIO= 1.344777  PHI,EQ.RATIO= 1.344777
+
+                 CHAMBER   THROAT
+ Pinf/P            1.0000   1.7993
+ P, BAR            31.026   17.243
+ T, K             2709.09  2415.05
+ RHO, KG/CU M    3.6421 0 2.2706 0
+ H, KJ/KG         -228.14  -700.93
+ U, KJ/KG        -1080.02 -1460.35
+ G, KJ/KG        -26171.1 -23828.1
+ S, KJ/(KG)(K)     9.5762   9.5762
+
+ M, (1/n)          26.441   26.441
+ Cp, KJ/(KG)(K)    1.6175   1.5975
+ GAMMAs            1.2413   1.2451
+ SON VEL,M/SEC     1028.3    972.4
+ MACH NUMBER        0.000    1.000
+
+ PERFORMANCE PARAMETERS
+
+ Ae/At                      1.0000
+ CSTAR, M/SEC               1405.2
+ CF                         0.6920
+ Ivac, M/SEC                1753.4
+ Isp, M/SEC                  972.4
+
+ MOLE FRACTIONS
+
+ *CO             0.14066   *CO2            0.09497   *H              0.00217
+ *H2             0.04198   H2O             0.19117   *NO             0.00071
+ *N2             0.52531   *O              0.00008   *OH             0.00278
+ *O2             0.00015
+
+  * THERMODYNAMIC PROPERTIES FITTED TO 20000.K
+
+ NOTE. WEIGHT FRACTION OF FUEL IN TOTAL FUELS AND OF OXIDANT IN TOTAL OXIDANTS
+
+
+

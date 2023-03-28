@@ -173,7 +173,7 @@ class TabulatedMotor(RocketComponent):
             thrust = Vector(0,0,0)
         else:
             if self.SITVC == True:
-                thrust = computeForces(self.nozzle, self.primaryFlow, self.injection)
+                thrust = computeForces(self.nozzle, self.primaryFlow, self.injection, self.rocket)
             elif self.CEA == True:
                 # Compute axial thrust from NASA CEA (assuming no SITVC)
                 environment = self.rocket.environment.getAirProperties(self.rocket.rigidBody.state.position, 0)

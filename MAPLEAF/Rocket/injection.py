@@ -3,7 +3,6 @@ from CoolProp.CoolProp import PropsSI
 
 from MAPLEAF.Motion import Vector
 
-# __all__ = [ "Injection" ]
 __all__ = [ "Injection" , "computeForces"]
 
 class Injection(): 
@@ -15,13 +14,14 @@ class Injection():
         self.Cd = componentDictReader.getFloat("Injection.Cd")
         self.wswm = componentDictReader.getFloat("Injection.wswm")
         self.location = componentDictReader.getFloat("Injection.location")
-        self.P_amb = componentDictReader.getFloat("Injection.P_amb")
         self._precomputeGeometry()
     
     def _precomputeGeometry(self):
         self.area = self.diameter**2*math.pi/4 #m^2, area of secondary injection
 
-def computeForces(nozzle, exhaust, injection):
+def computeForces(nozzle, exhaust, injection, rocket):
+    environment = rocket.environment.getAirProperties(rocket.rigidBody.state.position, 0)
+
     def GetExhaustPropx(Nozzle, exhaust, x):
         # Obtains properties at a point in the nozzle using stagnation properties based on isentropic flow conditions
         # x is the distance in meters from the nozzle throat
@@ -144,7 +144,7 @@ def computeForces(nozzle, exhaust, injection):
         # denominator = P_plateau - injection.P_amb + 1/2*q0*Cpmax_value
         denominator = separation.P - exit.P + 1/2*q0*Cpmax_value
         # print('denom', denominator)
-        numerator = injection.Cd*injection.gamma*injection.stagPress*(2/(injection.gamma+1))**(1/(injection.gamma-1))*(1/(injection.gamma**2-1)*(1-(injection.P_amb/injection.stagPress)**((injection.gamma-1)/injection.gamma)))**0.5
+        numerator = injection.Cd*injection.gamma*injection.stagPress*(2/(injection.gamma+1))**(1/(injection.gamma-1))*(1/(injection.gamma**2-1)*(1-(environment.Pressure/injection.stagPress)**((injection.gamma-1)/injection.gamma)))**0.5
         # print('numerator', numerator)
         h = injection.diameter*np.sqrt(numerator/denominator)
 

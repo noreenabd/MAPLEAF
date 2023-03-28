@@ -1,0 +1,10 @@
+problem    o/f=7,
+      rocket  equilibrium  frozen  nfz=1 
+  p,psia=450,
+react 
+  fuel=(CH2)x(cr) wt=100 t,k=298
+  oxid=N2O wt=100
+output  
+     siunits short
+    plot p t rho cp gam son pip mach aeat ivac isp m mw 
+end
