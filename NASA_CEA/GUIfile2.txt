@@ -1,0 +1,15 @@
+      
+     prob           
+o/f=4.5 rocket equilibrium tcest,k=3800                                                                                 
+p,psia=450                                                                                                              
+sup,ae/at=28.29                                                                                                         
+      
+     reac           
+oxid=NH4CLO4(I) wt=100 t,k=298                                                                                          
+fuel=AL(cr) wt=25 t,k=298                                                                                               
+fuel=HTPB wt=75 t,k=298 h,kj/mol=23.99 C 4 H 6 O 0.04 H 0.04                                                            
+      
+     outp           
+siunits short plot p t rho cp gam son pip mach aeat ivac isp m mw                                                       
+      
+     end            

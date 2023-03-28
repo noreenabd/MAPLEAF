@@ -1,0 +1,6 @@
+ NH4CLO4(I) 
+ AL(cr) 
+ ENDR
+ C  H  O  H    
+    
+    

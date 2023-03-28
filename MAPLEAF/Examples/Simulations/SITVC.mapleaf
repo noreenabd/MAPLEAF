@@ -74,15 +74,24 @@ Rocket{
             class           Motor
             path            MAPLEAF/Examples/Motors/C6-3.txt
 
-            Nozzle{
-                ### Optional: define the nozzle geometry if SITVC is implemented
-                ### Define only the diverging nozzle geometry here ###
-                class           Nozzle
-                name            zmijanovic 
+            # Nozzle{
+            #     ### Optional: define the nozzle geometry if SITVC is implemented
+            #     ### Define only the diverging nozzle geometry here ###
+            #     class           Nozzle
+            #     name            zmijanovic 
 
-                angle           10.84 # degrees - full nozzle angle 
-                throatDia       0.01944 # m - nozzle throat diameter 
-                areaRatio       4.237 # (non-dimensional) - nozzle throat area divided by exit area
+            #     angle           10.84 # degrees - full nozzle angle 
+            #     throatDia       0.01944 # m - nozzle throat diameter 
+            #     areaRatio       4.237 # (non-dimensional) - nozzle throat area divided by exit area
+            # }
+            Nozzle{
+                ### Define the nozzle geometry here ###
+                class           Nozzle
+                name               NewtonSpaid 
+
+                angle              30 # degrees - full nozzle angle 
+                throatDia          0.035814 # 1.41*25.4/1000 - m - nozzle throat diameter 
+                areaRatio          28.29 # (non-dimensional) - nozzle throat area divided by exit area
             }
 
             PrimaryFlow{
@@ -95,23 +104,36 @@ Rocket{
                 
                 # NASA CEA input file folder path
                 folderPath  C:\\Users\\Noreen\\OneDrive - University of Calgary\\Documents\\GitHub\\Research\\New folder\\NASA_CEA
-                burnTime    11 # seconds - motor burn time
-                OxToFuelRatio   4.5 # (non-dimensional) - oxidizer to fuel ratio
+                oxToFuelRatio   4.5 # (non-dimensional) - oxidizer to fuel ratio
             }
 
+            # Injection{
+            #     ### Define the injection parameters here ###
+            #     name               zmijanovic1
+
+            #     injectant          air # injectant species, uses CoolProp list of fluids (http://www.coolprop.org/fluid_properties/PurePseudoPure.html#list-of-fluids)
+            #     diameter           0.00615 # m - diameter of injection port orifice 
+            #     mach               1 # (non-dimensional) - Mach number of at the injection port, usually assumed sonic
+            #     stagPress          200000 # Pa - stagnation pressure of the injectant
+            #     Cd                 1 # injection port's coefficient of discharge (related to displacement thickness due to B.L.)
+            #     wswm               0.055 # (non-dimensional) - ratio of secondary to primary mass flow rate
+
+            #     location           0.9 #  # (non-dimensional) - location of injection divided by length of converging nozzle section
+            #     P_amb              8 # Pa - ambient pressure
+            # }
+            
             Injection{
                 ### Define the injection parameters here ###
-                name               zmijanovic1
+                name               NewtonSpaid1
 
-                injectant          air # injectant species, uses CoolProp list of fluids (http://www.coolprop.org/fluid_properties/PurePseudoPure.html#list-of-fluids)
-                diameter           0.00615 # m - diameter of injection port orifice 
+                injectant          R12 # injectant species
+                diameter           0.0012192 #= 0.048*25.4/1000 - m - diameter of injection port orifice 
                 mach               1 # (non-dimensional) - Mach number of at the injection port, usually assumed sonic
-                stagPress          200000 # Pa - stagnation pressure of the injectant
+                stagPress          7230000 # Pa - stagnation pressure of the injectant
                 Cd                 1 # injection port's coefficient of discharge (related to displacement thickness due to B.L.)
-                wswm               [0.055] # (non-dimensional) - ratio of secondary to primary mass flow rate
-
-                location           0.9 #  # (non-dimensional) - location of injection divided by length of converging nozzle section
-                P_amb              8 # Pa - ambient pressure
+                wswm               0.0001#0.032 # (non-dimensional) - ratio of secondary to primary mass flow rate
+                location           0.46 # (non-dimensional) - location of injection divided by length of converging nozzle section
+                P_amb              81358 #=11.8 psia - Pa - ambient pressure
             }
         }
 

@@ -1,4 +1,6 @@
 import re
+from MAPLEAF.Rocket.CEA import PrimaryFlow, RunCEA, Nozzle
+from MAPLEAF.Rocket.injection import Injection, computeForces
 
 from MAPLEAF.Motion import ForceMomentSystem, Inertia, Vector, linInterp
 from MAPLEAF.Rocket import RocketComponent
@@ -35,11 +37,31 @@ class TabulatedMotor(RocketComponent):
         self.classType = componentDictReader.getString("class")
         self.ignitionTime = 0 # Modified by Rocket._initializeStaging and Rocket._stageSeparation
 
+        ### NASA CEA Analytical Thrust Initialization ###
+        self.CEA = False
+        if (componentDictReader.tryGetString("PrimaryFlow.folderPath", defaultValue=None) != None):
+            self.CEA = True
+            self.primaryFlowType = PrimaryFlow(componentDictReader, rocket, stage)
+            if (componentDictReader.tryGetString('Nozzle.areaRatio', defaultValue = None) == None):
+                print("\n WARNING: Computation of the analytical thrust using NASA CEA requires a nozzle input module. Please add Nozzle under Motor. Please refer to SimDefinitionTemplate.mapleaf for more details.\n")
+            self.nozzle = Nozzle(componentDictReader, rocket, stage)
+            self.primaryFlow = RunCEA(self.primaryFlowType.fileName, self.primaryFlowType.folderPath, self.nozzle)
+            self._computeMassFlowRates()
+        
+        ### SITVC Initialization ###
+        self.SITVC = False
+        if (componentDictReader.tryGetString("Injection.injectant", defaultValue = None) != None): 
+            self.SITVC = True
+            self.injection = Injection(componentDictReader, rocket, stage)
+
+        
         # Impulse adjustments (mostly for Monte Carlo sims)
         self.impulseAdjustFactor = componentDictReader.getFloat("impulseAdjustFactor")
         self.burnTimeAdjustFactor = componentDictReader.getFloat("burnTimeAdjustFactor")
 
+
         motorFilePath = componentDictReader.getString("path")
+        print('motorFilePath', motorFilePath)
         self._parseMotorDefinitionFile(motorFilePath)
 
         # Set the position to the initial CG location
@@ -47,7 +69,12 @@ class TabulatedMotor(RocketComponent):
         self.position = initInertia.CG
 
     #TODO: Build converter/parser for standard engine format like rasp/.eng or something like that
-
+    def _computeMassFlowRates(self): 
+        self.primaryFlow.massFlow = self.primaryFlow.throat.density*self.nozzle.throatArea*self.primaryFlow.throat.sonicVelocity*self.primaryFlow.throat.mach
+        self.primaryFlow.oxFlowrate = self.primaryFlow.massFlow*self.primaryFlowType.oxToFuelRatio/(1+self.primaryFlowType.oxToFuelRatio)
+        self.primaryFlow.fuelBurnRate = self.primaryFlow.massFlow - self.primaryFlow.oxFlowrate
+        return 
+    
     def _parseMotorDefinitionFile(self, motorFilePath):
         ''' Parses a motor definition text file. See MAPLEAF/Examples/Motors for examples '''
       
@@ -143,11 +170,49 @@ class TabulatedMotor(RocketComponent):
         # Determine thrust magnitude
         if timeSinceIgnition < 0 or timeSinceIgnition > self.times[-1]:
             thrustMagnitude = 0
+            thrust = Vector(0,0,0)
         else:
-            thrustMagnitude = linInterp(self.times, self.thrustLevels, timeSinceIgnition)
+            if self.SITVC == True:
+                thrust = computeForces(self.nozzle, self.primaryFlow, self.injection)
+            elif self.CEA == True:
+                # Compute axial thrust from NASA CEA (assuming no SITVC)
+                environment = self.rocket.environment.getAirProperties(self.rocket.rigidBody.state.position, 0)
+                thrustMagnitude = self.primaryFlow.m_primary*self.primaryFlow.exit.sonicVelocity*self.primaryFlow.exit.mach + (self.primaryFlow.exit.pressure - environment.Pressure)*self.nozzle.exitArea
+                thrust = Vector(0,0,thrustMagnitude)
+            else: 
+                thrustMagnitude = linInterp(self.times, self.thrustLevels, timeSinceIgnition)
+                thrust = Vector(0,0,thrustMagnitude)
+        # #### If control system exists, use actuator deflections 1:1 to set thrust vectoring angles of the nozle ####
+        # if self.controlSystem != None:
+        #     xDefl = self.actuatorList[0].getDeflection(time) # Only two actuators are needed (x, y) in order to rotate the rocket about the two short axis. Roll has NOT been implemented here
+        #     yDefl = self.actuatorList[1].getDeflection(time) # deflections are 1:1 radians change of the nozzle in x and y axis of the local frame respectively
+
+        #     thrustForce = self._getTVCAngledThrustForce(thrustMagnitude, xDefl, yDefl)
+
+        # else:
+        #     thrustForce = Vector(0, 0, thrustMagnitude)
+    
+        # # Thrust force applied at the location specified in the simulation definition
+        # thrust = ForceMomentSystem(thrustForce, self.thrustApplicationPosition)
+
+        # # Log and return the three components of the thrust vector
+        # forceLogLine = " {:>10.4f} {:>10.4f}".format(thrust.force, thrust.moment)
+        # if self.controlSystem != None:
+        #     forceLogLine += " {:>6.4} {:>6.4}".format(xDefl, yDefl)
+        # self.rocket.appendToForceLogLine(forceLogLine)
+        
+        # return thrust
+        
+        # timeSinceIgnition = max(0, time - self.ignitionTime)
+        
+        # # Determine thrust magnitude
+        # if timeSinceIgnition < 0 or timeSinceIgnition > self.times[-1]:
+        #     thrustMagnitude = 0
+        # else:
+        #     thrustMagnitude = linInterp(self.times, self.thrustLevels, timeSinceIgnition)
         
         # Create Vector
-        thrust = Vector(0,0, thrustMagnitude)
+        # thrust = Vector(0,0, thrustMagnitude)
         return ForceMomentSystem(thrust)
 
     def updateIgnitionTime(self, ignitionTime, fakeValue=False):
