@@ -318,8 +318,8 @@ Rocket{
 			Nozzle{
                 ### Define the nozzle geometry here ###
                 angle               30 # degrees - full nozzle angle 
-                throatDia           0.05 # m - nozzle throat diameter 
-                areaRatio           5 # (non-dimensional) - nozzle throat area divided by exit area
+                throatDia           0.0397 # m - nozzle throat diameter 
+                areaRatio           4.39 # (non-dimensional) - nozzle throat area divided by exit area
             }
 
             PrimaryFlow{
@@ -332,7 +332,7 @@ Rocket{
                 
                 # NASA CEA input file folder path
                 folderPath  	C:\Users\Noreen\Documents\GitHub\MAPLEAF_SITVC\NASA_CEA
-                oxToFuelRatio   7 # (non-dimensional) - oxidizer to fuel ratio
+                oxToFuelRatio   7.65 # (non-dimensional) - oxidizer to fuel ratio
             }
             
             Injection{
@@ -340,10 +340,10 @@ Rocket{
                 injectant          N2O # injectant species
                 diameter           0.0012192 #= 0.048*25.4/1000 - m - diameter of injection port orifice 
                 mach               1 # (non-dimensional) - Mach number of at the injection port, usually assumed sonic
-                stagPress          3100000 # Pa - stagnation pressure of the injectant
+                stagPress          2506864.8 # Pa - stagnation pressure of the injectant
                 Cd                 1 # injection port's coefficient of discharge (related to displacement thickness due to B.L.)
                 wswm               0.05#0.032 # (non-dimensional) - ratio of secondary to primary mass flow rate
-                location           0.8 # (non-dimensional) - location of injection divided by length of converging nozzle section
+                location           0.8 # (non-dimensional) - location of injection divided by length of diverging nozzle section
             }
 
 

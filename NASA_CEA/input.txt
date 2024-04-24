@@ -1,5 +1,11 @@
- (CH2)x(cr) 
- N2O 
+ CO2 
+ H2O 
+ AL2O3(a) 
+ HCL 
+ H2 
+ CO 
+ N2 
+ H2O(L) 
  ENDR
    
     

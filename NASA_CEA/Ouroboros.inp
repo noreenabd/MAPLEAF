@@ -1,11 +1,10 @@
-problem    o/f=7,
-      rocket  equilibrium 
-  p,psia=450,
-  sup,ae/at=5,
-react 
-  fuel=(CH2)x(cr) wt=100 t,k=298
-  oxid=N2O wt=100
-output  
-     siunits short
+problem    o/f=7.65,
+    rocket  equilibrium 
+  p,psia=363.59,
+  pi/p=26.74,
+react  
+  fuel=(CH2)x(cr) wt=100  t,k=298.15  
+  oxid=N2O wt=100  t,k=292.15  
+output  short 
     plot p t rho cp gam son pip mach aeat ivac isp m mw 
 end

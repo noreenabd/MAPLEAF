@@ -118,7 +118,7 @@ Rocket{
             #     Cd                 1 # injection port's coefficient of discharge (related to displacement thickness due to B.L.)
             #     wswm               0.055 # (non-dimensional) - ratio of secondary to primary mass flow rate
 
-            #     location           0.9 #  # (non-dimensional) - location of injection divided by length of converging nozzle section
+            #     location           0.9 #  # (non-dimensional) - location of injection divided by length of diverging nozzle section
             #     P_amb              8 # Pa - ambient pressure
             # }
             
@@ -132,7 +132,7 @@ Rocket{
                 stagPress          7230000 # Pa - stagnation pressure of the injectant
                 Cd                 1 # injection port's coefficient of discharge (related to displacement thickness due to B.L.)
                 wswm               0.0001#0.032 # (non-dimensional) - ratio of secondary to primary mass flow rate
-                location           0.46 # (non-dimensional) - location of injection divided by length of converging nozzle section
+                location           0.46 # (non-dimensional) - location of injection divided by length of diverging nozzle section
                 P_amb              81358 #=11.8 psia - Pa - ambient pressure
             }
         }

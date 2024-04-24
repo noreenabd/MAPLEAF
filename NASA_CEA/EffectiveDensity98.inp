@@ -1,0 +1,14 @@
+problem    %fuel=100,99.5,99,98.5,98,97.5,97,96.5,96,
+      hp   p,bar=3,  t,k=3800
+react  
+  fuel=CO2 wt=13  t,k=3000  
+  fuel=H2O wt=27  t,k=3000  
+  fuel=AL2O3(a) wt=2  t,k=2200  
+  fuel=HCL wt=18  t,k=3000  
+  fuel=H2 wt=19  t,k=3000  
+  fuel=CO wt=13  t,k=3000  
+  fuel=N2 wt=8  t,k=3000  
+  oxid=H2O(L) wt=100  t,k=300  
+output  short 
+    plot rho  
+ end
